@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arkadium SDK Test</title>
+    <script src="https://developers.arkadium.com/cdn/sdk/v2/sdk.js"></script>
+</head>
+<body>
+    <h1>Arkadium SDK Test</h1>
+    <p>Check the console for SDK initialization status.</p>
+    
+    <script>
+        async function testSDK() {
+            try {
+                console.log('Testing Arkadium SDK initialization...');
+                const sdk = await window.ArkadiumGameSDK.getInstance();
+                
+                console.log('SDK initialized successfully!');
+                console.log('SDK instance:', sdk);
+                
+                // Enable debug mode
+                sdk.debugMode(true);
+                
+                // Test lifecycle events
+                sdk.lifecycle.onTestReady();
+                console.log('onTestReady() called');
+                
+                // Test analytics
+                sdk.analytics.trackEvent('test_event', { message: 'SDK test successful' });
+                console.log('Analytics event tracked');
+                
+            } catch (error) {
+                console.error('SDK initialization failed:', error);
+            }
+        }
+        
+        // Run test when page loads
+        document.addEventListener('DOMContentLoaded', testSDK);
+    </script>
+</body>
+</html> 

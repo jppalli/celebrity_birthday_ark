@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arkadium Sandbox Test</title>
+    <script src="https://developers.arkadium.com/cdn/sdk/v2/sdk.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-section {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007cba;
+        }
+        .success { border-left-color: #28a745; }
+        .error { border-left-color: #dc3545; }
+        .warning { border-left-color: #ffc107; }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #005a8b;
+        }
+        #console-output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Arkadium Sandbox Test</h1>
+    
+    <div class="test-section">
+        <h3>Environment Check</h3>
+        <div id="environment-info"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>SDK Initialization</h3>
+        <button onclick="testSDKInit()">Test SDK Initialization</button>
+        <div id="sdk-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Lifecycle Events</h3>
+        <button onclick="testLifecycle()">Test Lifecycle Events</button>
+        <div id="lifecycle-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Analytics</h3>
+        <button onclick="testAnalytics()">Test Analytics</button>
+        <div id="analytics-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Persistence</h3>
+        <button onclick="testPersistence()">Test Persistence</button>
+        <div id="persistence-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Console Output</h3>
+        <div id="console-output"></div>
+        <button onclick="clearConsole()">Clear Console</button>
+    </div>
+
+    <script>
+        let sdk = null;
+        let sdkInitialized = false;
+        
+        // Override console.log to capture output
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalError = console.error;
+        
+        function logToOutput(message, type = 'log') {
+            const output = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.style.color = type === 'error' ? 'red' : type === 'warn' ? 'orange' : 'black';
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            output.appendChild(logEntry);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            logToOutput(args.join(' '));
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            logToOutput('WARN: ' + args.join(' '), 'warn');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            logToOutput('ERROR: ' + args.join(' '), 'error');
+        };
+        
+        function updateStatus(elementId, message, type = '') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+        
+        function checkEnvironment() {
+            const envInfo = document.getElementById('environment-info');
+            const hostname = window.location.hostname;
+            const protocol = window.location.protocol;
+            const userAgent = navigator.userAgent;
+            
+            const isArkadium = hostname.includes('arkadium');
+            const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1');
+            const sdkAvailable = typeof window.ArkadiumGameSDK !== 'undefined';
+            
+            envInfo.innerHTML = `
+                <div><strong>Hostname:</strong> ${hostname}</div>
+                <div><strong>Protocol:</strong> ${protocol}</div>
+                <div><strong>Is Arkadium:</strong> ${isArkadium ? 'Yes' : 'No'}</div>
+                <div><strong>Is Localhost:</strong> ${isLocalhost ? 'Yes' : 'No'}</div>
+                <div><strong>SDK Available:</strong> ${sdkAvailable ? 'Yes' : 'No'}</div>
+                <div><strong>User Agent:</strong> ${userAgent.substring(0, 100)}...</div>
+            `;
+            
+            console.log('Environment check completed');
+        }
+        
+        async function testSDKInit() {
+            try {
+                updateStatus('sdk-status', 'Initializing SDK...', 'warning');
+                
+                // Wait for SDK to be available
+                let attempts = 0;
+                const maxAttempts = 10;
+                
+                while (typeof window.ArkadiumGameSDK === 'undefined' && attempts < maxAttempts) {
+                    console.log(`Waiting for SDK... Attempt ${attempts + 1}/${maxAttempts}`);
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    attempts++;
+                }
+                
+                if (typeof window.ArkadiumGameSDK === 'undefined') {
+                    throw new Error('ArkadiumGameSDK not available after timeout');
+                }
+                
+                // Initialize SDK
+                sdk = await window.ArkadiumGameSDK.getInstance();
+                
+                // Enable debug mode
+                if (sdk && typeof sdk.debugMode === 'function') {
+                    sdk.debugMode(true);
+                }
+                
+                sdkInitialized = true;
+                updateStatus('sdk-status', 'SDK initialized successfully!', 'success');
+                console.log('SDK initialized successfully');
+                
+            } catch (error) {
+                updateStatus('sdk-status', `SDK initialization failed: ${error.message}`, 'error');
+                console.error('SDK initialization failed:', error);
+            }
+        }
+        
+        function testLifecycle() {
+            if (!sdk || !sdkInitialized) {
+                updateStatus('lifecycle-status', 'SDK not initialized', 'error');
+                return;
+            }
+            
+            try {
+                const lifecycle = sdk.lifecycle;
+                let status = '';
+                
+                if (lifecycle && typeof lifecycle.onTestReady === 'function') {
+                    lifecycle.onTestReady();
+                    status += 'onTestReady() called successfully<br>';
+                }
+                
+                if (lifecycle && typeof lifecycle.onGameStart === 'function') {
+                    lifecycle.onGameStart();
+                    status += 'onGameStart() called successfully<br>';
+                }
+                
+                if (lifecycle && typeof lifecycle.onGameEnd === 'function') {
+                    lifecycle.onGameEnd();
+                    status += 'onGameEnd() called successfully<br>';
+                }
+                
+                if (lifecycle && typeof lifecycle.onGameWin === 'function') {
+                    lifecycle.onGameWin();
+                    status += 'onGameWin() called successfully<br>';
+                }
+                
+                updateStatus('lifecycle-status', status || 'No lifecycle methods available', 'success');
+                console.log('Lifecycle events tested');
+                
+            } catch (error) {
+                updateStatus('lifecycle-status', `Lifecycle test failed: ${error.message}`, 'error');
+                console.error('Lifecycle test failed:', error);
+            }
+        }
+        
+        function testAnalytics() {
+            if (!sdk || !sdkInitialized) {
+                updateStatus('analytics-status', 'SDK not initialized', 'error');
+                return;
+            }
+            
+            try {
+                const analytics = sdk.analytics;
+                let status = '';
+                
+                if (analytics && typeof analytics.trackEvent === 'function') {
+                    analytics.trackEvent('test_event', { message: 'Analytics test' });
+                    status = 'Analytics event tracked successfully';
+                } else {
+                    status = 'Analytics not available';
+                }
+                
+                updateStatus('analytics-status', status, 'success');
+                console.log('Analytics test completed');
+                
+            } catch (error) {
+                updateStatus('analytics-status', `Analytics test failed: ${error.message}`, 'error');
+                console.error('Analytics test failed:', error);
+            }
+        }
+        
+        async function testPersistence() {
+            if (!sdk || !sdkInitialized) {
+                updateStatus('persistence-status', 'SDK not initialized', 'error');
+                return;
+            }
+            
+            try {
+                const persistence = sdk.persistence;
+                let status = '';
+                
+                if (persistence && typeof persistence.setItem === 'function' && typeof persistence.getItem === 'function') {
+                    // Test setItem
+                    await persistence.setItem('test_key', 'test_value');
+                    status += 'setItem() test passed<br>';
+                    
+                    // Test getItem
+                    const value = await persistence.getItem('test_key');
+                    if (value === 'test_value') {
+                        status += 'getItem() test passed<br>';
+                    } else {
+                        status += 'getItem() test failed<br>';
+                    }
+                } else {
+                    status = 'Persistence not available';
+                }
+                
+                updateStatus('persistence-status', status, 'success');
+                console.log('Persistence test completed');
+                
+            } catch (error) {
+                updateStatus('persistence-status', `Persistence test failed: ${error.message}`, 'error');
+                console.error('Persistence test failed:', error);
+            }
+        }
+        
+        function clearConsole() {
+            document.getElementById('console-output').innerHTML = '';
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Arkadium Sandbox Test loaded');
+            checkEnvironment();
+            
+            // Auto-test SDK after a short delay
+            setTimeout(() => {
+                testSDKInit();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
