@@ -312,42 +312,6 @@
             font-weight: 400;
         }
 
-        /* Responsive layout */
-        @media (max-width: 480px) {
-            .header {
-                padding: 0 12px;
-                height: 56px;
-            }
-            
-            .game-title {
-                font-size: 32px;
-            }
-            
-            .main-content {
-                padding: 4px;
-            }
-            
-            .clue-row {
-                font-size: 13px;
-                padding: 12px;
-                min-height: 52px;
-            }
-            
-            .guess-input {
-                font-size: 16px;
-                padding: 12px 10px;
-            }
-            
-            .guess-buttons {
-                gap: 6px;
-            }
-            
-            .guess-button {
-                padding: 12px 16px;
-                font-size: 13px;
-            }
-        }
-
         /* Portrait mode adjustments */
         @media (max-height: 700px) or (max-width: 768px) {
             .main-content {
@@ -366,7 +330,8 @@
             }
 
             .game-title {
-                font-size: 22px;
+                font-size: 20px;
+                margin: 0 60px; /* Add margin to prevent overlap with hamburger menu */
             }
 
             .guess-buttons {
@@ -382,35 +347,84 @@
 
         @media (max-width: 480px) {
             .header {
-                padding: 12px 16px;
+                padding: 0 12px;
+                height: 56px;
+            }
+            
+            .game-title {
+                font-size: 18px;
+                margin: 0 50px; /* Ensure title doesn't overlap with hamburger menu */
+                text-align: center;
+                line-height: 1.2;
+            }
+            
+            .hamburger-menu {
+                left: 12px;
+                padding: 6px;
             }
 
             .main-content {
-                padding: 12px;
+                padding: 8px;
             }
 
             .clue-row {
-                min-height: 50px;
+                min-height: 52px;
                 padding: 12px;
-                font-size: 14px;
+                font-size: 13px;
+                max-width: 100%;
             }
-
-            .game-title {
-                font-size: 20px;
-            }
-
-            .hamburger-menu {
-                left: 16px;
+            
+            .guess-input {
+                font-size: 16px;
+                padding: 12px 10px;
+                max-width: 100%;
             }
 
             .guess-buttons {
-                flex-direction: column;
-                gap: 10px;
+                gap: 8px;
+                max-width: 100%;
             }
 
             .guess-button {
-                max-width: none;
-                width: 100%;
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 360px) {
+            .game-title {
+                font-size: 16px;
+                margin: 0 45px;
+            }
+            
+            .header {
+                height: 52px;
+            }
+            
+            .hamburger-menu {
+                left: 8px;
+                padding: 4px;
+            }
+            
+            .clue-row {
+                padding: 10px;
+                font-size: 12px;
+                min-height: 48px;
+            }
+            
+            .guess-input {
+                padding: 10px 8px;
+                font-size: 16px;
+            }
+            
+            .guess-buttons {
+                gap: 6px;
+            }
+            
+            .guess-button {
+                padding: 10px 12px;
+                font-size: 12px;
             }
         }
 
@@ -1127,11 +1141,6 @@
                 <h3 id="calendarMonthYear">July 2025</h3>
                 <button class="calendar-nav-btn" id="nextMonth">
                     <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <button class="guess-button" id="todayButton" style="max-width: 120px; margin: 0 auto;">
-                    Today's Puzzle
                 </button>
             </div>
             <div class="calendar-grid">

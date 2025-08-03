@@ -1127,14 +1127,6 @@ class CelebrityBirthdayChallenge {
             });
         }
         
-        // Today button functionality
-        const todayButton = document.getElementById('todayButton');
-        if (todayButton) {
-            todayButton.addEventListener('click', () => {
-                this.elements.calendarModal.style.display = 'none';
-                this.resetToToday();
-            });
-        }
         
         if (this.elements.prevMonth) {
             this.elements.prevMonth.addEventListener('click', () => {
