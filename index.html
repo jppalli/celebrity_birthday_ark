@@ -49,10 +49,9 @@
             text-align: center;
             padding: 0 16px;
             background: #ffffff;
-            border-bottom: 1px solid #d3d6da;
             position: relative;
             z-index: 10;
-            height: 65px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -60,7 +59,7 @@
 
         .game-title {
             font-family: 'Fredoka', cursive;
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 700;
             letter-spacing: 0.01em;
             color: #1a1a1b;
@@ -98,7 +97,7 @@
             align-items: flex-start;
             padding: 8px;
             overflow-y: auto;
-            min-height: calc(100vh - 65px);
+            min-height: calc(100vh - 45px);
             width: 100%;
             margin: 0 auto;
             background: #ffffff;
@@ -112,13 +111,13 @@
             width: 100%;
             max-width: 500px;
             min-height: 100%;
-            padding: 12px 8px;
+            padding: 4px 8px;
         }
 
         .top-message-area {
             width: 100%;
             max-width: 350px;
-            margin-bottom: 12px;
+            margin-bottom: 4px;
             opacity: 0;
             transform: translateY(-20px);
             transition: all 0.3s ease;
@@ -134,7 +133,7 @@
             flex-direction: column;
             gap: 5px;
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 4px;
             align-items: center;
             padding: 0;
             transition: transform 0.3s ease;
@@ -143,11 +142,11 @@
         .clue-row {
             background: #ffffff;
             border: 2px solid #d3d6da;
-            padding: 14px;
+            padding: 8px;
             font-size: 14px;
             line-height: 1.4;
             color: #1a1a1b;
-            min-height: 58px;
+            min-height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -173,7 +172,7 @@
 
         .clue-number {
             position: absolute;
-            top: 6px;
+            top: 8px;
             left: 8px;
             font-size: 12px;
             font-weight: 700;
@@ -192,7 +191,7 @@
 
         .clue-text {
             font-weight: 400;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             min-height: 16px;
             font-size: 14px;
             color: #1a1a1b;
@@ -234,7 +233,7 @@
             display: flex;
             gap: 8px;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 4px;
             width: 100%;
             max-width: 300px;
         }
@@ -274,7 +273,7 @@
         .success-message {
             background: linear-gradient(135deg, #6aaa64 0%, #5a9a54 100%);
             color: #ffffff;
-            padding: 20px;
+            padding: 12px;
             text-align: center;
             margin: 0;
             font-size: 16px;
@@ -286,7 +285,7 @@
         .failure-message {
             background: linear-gradient(135deg, #787c7e 0%, #6a6e70 100%);
             color: #ffffff;
-            padding: 20px;
+            padding: 12px;
             text-align: center;
             margin: 0;
             font-size: 16px;
@@ -297,8 +296,8 @@
 
         .congrats {
             background: #ffffff;
-            padding: 20px;
-            margin-top: 12px;
+            padding: 12px;
+            margin-top: 4px;
             text-align: center;
             width: 100%;
             max-width: 100%;
@@ -309,8 +308,8 @@
             justify-content: space-between;
             align-items: center;
             gap: 16px;
-            margin: 16px 0;
-            padding: 16px 20px;
+            margin: 8px 0;
+            padding: 12px 16px;
             background: #f8f9fa;
             border-radius: 12px;
             border: 1px solid #e9ecef;
@@ -353,8 +352,8 @@
             }
 
             .clue-row {
-                min-height: 55px;
-                padding: 14px;
+                min-height: 45px;
+                padding: 8px;
                 font-size: 14px;
             }
 
@@ -397,8 +396,8 @@
             }
 
             .clue-row {
-                min-height: 52px;
-                padding: 12px;
+                min-height: 42px;
+                padding: 8px;
                 font-size: 13px;
                 max-width: 100%;
             }
@@ -450,9 +449,9 @@
             }
             
             .clue-row {
-                padding: 10px;
+                padding: 8px;
                 font-size: 12px;
-                min-height: 48px;
+                min-height: 42px;
             }
             
             .guess-input {
@@ -485,8 +484,8 @@
 
         @media (max-height: 500px) {
             .clue-row {
-                min-height: 45px;
-                padding: 12px;
+                min-height: 40px;
+                padding: 8px;
                 font-size: 13px;
             }
 
@@ -1286,6 +1285,13 @@
 
             <div class="menu-section">
                 <h4><i class="fas fa-gamepad"></i> Game</h4>
+                <div class="menu-item menu-link" id="menuCalendarLink">
+                    <div class="menu-item-label">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Past CelebBdays</span>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
                 <div class="menu-item menu-link" id="menuStatsLink">
                     <div class="menu-item-label">
                         <i class="fas fa-chart-bar"></i>
@@ -1293,13 +1299,7 @@
                     </div>
                     <i class="fas fa-chevron-right"></i>
                 </div>
-                <div class="menu-item menu-link" id="menuCalendarLink">
-                    <div class="menu-item-label">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Past Games</span>
-                    </div>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
+                
                 <div class="menu-item menu-link" id="menuHelpLink">
                     <div class="menu-item-label">
                         <i class="fas fa-question-circle"></i>
@@ -1381,9 +1381,9 @@
                     <button class="guess-button skip-button" id="skipGuess">Skip</button>
                 </div>
 
-                <div id="guessesLeft" style="text-align: center; margin: 20px 0; font-weight: 600; color: #666;">5
+                <div id="guessesLeft" style="text-align: center; margin: 4px 0; font-weight: 600; color: #666;">5
                     guesses remaining</div>
-                <div id="previousGuesses" style="text-align: center; margin: 20px 0; font-size: 14px; color: #666;">
+                <div id="previousGuesses" style="text-align: center; margin: 4px 0; font-size: 14px; color: #666;">
                 </div>
 
                 <div class="success-message" id="successMessage" style="display: none;"></div>

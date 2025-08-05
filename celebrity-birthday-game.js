@@ -310,7 +310,6 @@ class CelebrityBirthdayChallenge {
             // Correct guess - show celebration in top area
             const successContent = `<div class="success-message">
                 <div class="success-message-content">
-                    <h3>Correct!</h3>
                     <p>It's <span class="celebrity-name">${this.currentCelebrity.name} <span class="success-icon">🎉</span></span>!</p>
                     <p>Great job solving this challenge!</p>
                 </div>
@@ -566,11 +565,10 @@ class CelebrityBirthdayChallenge {
             currentClueBox.classList.add('filled', 'correct');
         }
         
-        // Show success in current clue box with better visual indicator
+        // Don't show the guessed name or success message in clue area when correct
         const failedGuessElement = this.elements[`failedGuess${this.currentActiveInput}`];
         if (failedGuessElement) {
-            failedGuessElement.innerHTML = `<span class="correct-guess">🎯 ${correctGuess}</span><br><span class="clever-message">Brilliant! You nailed it! 🌟</span>`;
-            failedGuessElement.style.display = 'block';
+            failedGuessElement.style.display = 'none';
         }
         
         // Hide current input
@@ -584,7 +582,6 @@ class CelebrityBirthdayChallenge {
         const isToday = this.currentDate === this.formatDate(new Date());
         const successContent = `<div class="success-message">
             <div class="success-message-content">
-                <h3>Correct!</h3>
                 <p>It's <span class="celebrity-name">${this.currentCelebrity.name} <span class="success-icon">🎉</span></span></p>
                 <p>You solved it in ${guessesUsed} guess${guessesUsed !== 1 ? 'es' : ''}!</p>
             </div>
