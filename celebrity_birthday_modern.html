@@ -4,15 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Celebrity Birthday Challenge</title>
+    <title>CelebBday</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         html, body {
@@ -21,9 +24,8 @@
             line-height: 1.4;
             margin: 0;
             padding: 0;
-            height: 100vh;
+            min-height: 100vh;
             font-size: 16px;
-            overflow: hidden;
             width: 100%;
         }
 
@@ -34,7 +36,7 @@
         }
 
         .game-container {
-            height: 100vh;
+            min-height: 100vh;
             display: grid;
             grid-template-rows: auto 1fr;
             padding: 0;
@@ -57,6 +59,7 @@
         }
 
         .game-title {
+            font-family: 'Fredoka', cursive;
             font-size: 36px;
             font-weight: 700;
             letter-spacing: 0.01em;
@@ -92,10 +95,10 @@
         .main-content {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 8px;
-            overflow: hidden;
-            height: 100%;
+            overflow-y: auto;
+            min-height: calc(100vh - 65px);
             width: 100%;
             margin: 0 auto;
             background: #ffffff;
@@ -108,8 +111,22 @@
             align-items: center;
             width: 100%;
             max-width: 500px;
-            height: 100%;
-            padding: 0 8px;
+            min-height: 100%;
+            padding: 12px 8px;
+        }
+
+        .top-message-area {
+            width: 100%;
+            max-width: 350px;
+            margin-bottom: 12px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .top-message-area.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .clues-grid {
@@ -119,7 +136,8 @@
             width: 100%;
             margin-bottom: 20px;
             align-items: center;
-            padding: 10px 0;
+            padding: 0;
+            transition: transform 0.3s ease;
         }
 
         .clue-row {
@@ -225,6 +243,7 @@
             background: #6aaa64;
             color: #ffffff;
             border: none;
+            border-radius: 8px;
             padding: 14px 20px;
             font-size: 14px;
             font-weight: 700;
@@ -253,47 +272,57 @@
         }
 
         .success-message {
-            background: #6aaa64;
+            background: linear-gradient(135deg, #6aaa64 0%, #5a9a54 100%);
             color: #ffffff;
-            padding: 16px;
+            padding: 20px;
             text-align: center;
-            font-weight: 700;
-            margin: 20px 0;
+            margin: 0;
             font-size: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(106, 170, 100, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .failure-message {
-            background: #787c7e;
+            background: linear-gradient(135deg, #787c7e 0%, #6a6e70 100%);
             color: #ffffff;
-            padding: 16px;
+            padding: 20px;
             text-align: center;
-            font-weight: 700;
-            margin: 20px 0;
+            margin: 0;
             font-size: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(120, 124, 126, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .congrats {
             background: #ffffff;
             padding: 20px;
-            margin-top: 20px;
+            margin-top: 12px;
             text-align: center;
-            max-width: 350px;
             width: 100%;
+            max-width: 100%;
         }
 
         .congrats-stats {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
             gap: 16px;
             margin: 16px 0;
-            flex-wrap: wrap;
+            padding: 16px 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .stat-item {
-            background: #ffffff;
+            background: transparent;
             padding: 0;
             text-align: center;
-            min-width: 60px;
+            flex: 1;
         }
 
         .stat-value {
@@ -389,6 +418,19 @@
                 padding: 12px 16px;
                 font-size: 13px;
             }
+
+            .congrats-stats {
+                gap: 12px;
+                padding: 12px 16px;
+            }
+
+            .stat-value {
+                font-size: 28px;
+            }
+
+            .stat-label {
+                font-size: 11px;
+            }
         }
 
         /* Extra small screens */
@@ -425,6 +467,19 @@
             .guess-button {
                 padding: 10px 12px;
                 font-size: 12px;
+            }
+
+            .congrats-stats {
+                gap: 12px;
+                padding: 12px 16px;
+            }
+
+            .stat-value {
+                font-size: 28px;
+            }
+
+            .stat-label {
+                font-size: 11px;
             }
         }
 
@@ -526,6 +581,7 @@
         }
 
         .menu-header h3 {
+            font-family: 'Fredoka', cursive;
             margin: 0;
             font-size: 18px;
             font-weight: 700;
@@ -536,6 +592,7 @@
         .close-menu {
             background: none;
             border: none;
+            border-radius: 4px;
             font-size: 18px;
             cursor: pointer;
             color: #787c7e;
@@ -699,6 +756,7 @@
         }
 
         .modal-header h2 {
+            font-family: 'Fredoka', cursive;
             font-size: 20px;
             font-weight: 700;
             color: #1a1a1b;
@@ -708,6 +766,7 @@
         .close-modal {
             background: none;
             border: none;
+            border-radius: 4px;
             font-size: 20px;
             cursor: pointer;
             color: #787c7e;
@@ -737,6 +796,7 @@
             background: #ffffff;
             color: #1a1a1b;
             border: 2px solid #d3d6da;
+            border-radius: 8px;
             width: 40px;
             height: 40px;
             cursor: pointer;
@@ -760,6 +820,7 @@
         }
 
         #calendarMonthYear {
+            font-family: 'Fredoka', cursive;
             font-size: 18px;
             font-weight: 700;
             color: #1a1a1b;
@@ -799,6 +860,7 @@
             font-weight: 400;
             font-size: 14px;
             border: 1px solid #d3d6da;
+            border-radius: 6px;
             transition: background-color 0.1s ease;
         }
 
@@ -818,8 +880,19 @@
         }
 
         .calendar-date.today {
-            background: #f6f7f8;
+            background: #6aaa64;
+            color: #ffffff;
+            border-color: #6aaa64;
             font-weight: 700;
+        }
+
+        /* Light green border for unplayed and uncompleted challenges */
+        .calendar-date.past:not(.solved):not(.failed) {
+            border: 2px solid #90EE90;
+        }
+
+        .calendar-date.today:not(.solved):not(.failed) {
+            border: 2px solid #90EE90;
         }
 
         .calendar-date.future {
@@ -832,21 +905,6 @@
             background: #6aaa64;
             color: #ffffff;
             border-color: #6aaa64;
-        }
-
-        .calendar-date.solved:after {
-            content: "✓";
-            position: absolute;
-            top: 2px;
-            right: 4px;
-            font-size: 10px;
-            color: #ffffff;
-            font-weight: 700;
-        }
-
-        .calendar-date.solved {
-            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-            border: 1px solid #ccc;
             font-weight: 600;
         }
 
@@ -854,16 +912,6 @@
             background: #787c7e;
             color: #ffffff;
             border-color: #787c7e;
-        }
-
-        .calendar-date.failed:after {
-            content: "✗";
-            position: absolute;
-            top: 2px;
-            right: 4px;
-            font-size: 10px;
-            color: #ffffff;
-            font-weight: 700;
         }
 
         .calendar-status {
@@ -956,6 +1004,241 @@
             letter-spacing: 0.05em;
             font-weight: 400;
         }
+
+        /* Enhanced Visual Indicators */
+        .calendar-day-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            position: relative;
+        }
+
+        .day-number {
+            font-weight: inherit;
+        }
+
+        .status-indicator {
+            font-size: 10px;
+            font-weight: bold;
+            position: absolute;
+            top: 2px;
+            right: 4px;
+        }
+
+        .status-indicator.success {
+            color: #ffffff;
+        }
+
+        .status-indicator.failed {
+            color: #ffffff;
+        }
+
+        .status-indicator.locked {
+            color: #999999;
+            font-size: 8px;
+        }
+
+        /* Replay Challenge Styles */
+        .replay-challenge-message {
+            background: #f6f7f8;
+            border: 2px solid #d3d6da;
+            padding: 20px;
+            margin: 0;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(211, 214, 218, 0.3);
+        }
+
+        /* Completed Challenge Styles */
+        .completed-challenge-message {
+            background: #e8f5e8;
+            border: 2px solid #6aaa64;
+            padding: 20px;
+            margin: 0;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(106, 170, 100, 0.2);
+        }
+
+        .completed-content h3 {
+            margin-bottom: 12px;
+            color: #6aaa64;
+            font-size: 18px;
+        }
+
+        .completed-content p {
+            margin: 8px 0;
+            color: #1a1a1b;
+        }
+
+        .replay-content h3 {
+            margin-bottom: 12px;
+            color: #1a1a1b;
+            font-size: 18px;
+        }
+
+        .replay-input-section {
+            margin-top: 16px;
+        }
+
+        .replay-input-section input {
+            width: 100%;
+            max-width: 300px;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #d3d6da;
+            border-radius: 4px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .replay-input-section button {
+            background: #6aaa64;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            margin: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .replay-input-section button:hover {
+            background: #5a9a54;
+        }
+
+        .replay-input-section button:last-child {
+            background: #787c7e;
+        }
+
+        .replay-input-section button:last-child:hover {
+            background: #6a6e70;
+        }
+
+        .replay-success {
+            color: #6aaa64;
+            font-weight: 600;
+        }
+
+        .replay-incorrect {
+            color: #787c7e;
+        }
+
+        .replay-answer {
+            color: #1a1a1b;
+        }
+
+        /* Better visual indicators for game elements */
+        .correct-guess {
+            color: #6aaa64;
+            font-weight: 600;
+        }
+
+        .incorrect-guess {
+            color: #787c7e;
+            font-weight: 600;
+        }
+
+        .skipped-guess {
+            color: #d3d6da;
+            font-weight: 600;
+        }
+
+        .clever-message {
+            font-size: 12px;
+            font-style: italic;
+            color: #878a8c;
+            margin-top: 4px;
+        }
+
+        .previous-guess {
+            margin: 4px 0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .previous-guess.correct {
+            background: #e8f5e8;
+            color: #6aaa64;
+            border: 1px solid #6aaa64;
+        }
+
+        .previous-guess.failed {
+            background: #f0f0f0;
+            color: #787c7e;
+            border: 1px solid #787c7e;
+        }
+
+        .previous-guess.skipped {
+            background: #f8f8f8;
+            color: #d3d6da;
+            border: 1px solid #d3d6da;
+        }
+
+        /* Game over message styling */
+        .game-over-message h3 {
+            margin-bottom: 12px;
+            color: #787c7e;
+        }
+
+        .clever-final-message {
+            font-style: italic;
+            color: #878a8c;
+            margin-top: 8px;
+        }
+
+        /* Success message styling */
+        .success-message-content h3 {
+            font-family: 'Fredoka', cursive;
+            margin-bottom: 12px;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .success-message-content p {
+            margin: 8px 0;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .success-message-content .celebrity-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .success-message-content .success-icon {
+            font-size: 18px;
+        }
+
+        /* Failure message styling */
+        .failure-message-content h3 {
+            font-family: 'Fredoka', cursive;
+            margin-bottom: 12px;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .failure-message-content p {
+            margin: 8px 0;
+            font-size: 16px;
+            line-height: 1.4;
+        }
     </style>
 </head>
 
@@ -1037,11 +1320,14 @@
                     <span></span>
                 </div>
             </div>
-            <h1 class="game-title">Celebrity Birthday</h1>
+            <h1 class="game-title">CelebBday</h1>
         </div>
 
         <div class="main-content">
             <div class="game-area">
+                <!-- Top message area for success messages and replay inputs -->
+                <div class="top-message-area" id="topMessageArea" style="display: none;"></div>
+                
                 <div class="clues-grid" id="cluesGrid">
                     <div class="clue-row" id="clue1">
                         <div class="clue-number">1</div>
@@ -1117,10 +1403,6 @@
                             <div class="stat-value" id="congratsSuccessRate">0%</div>
                             <div class="stat-label">Success Rate</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="congratsAvgTime">0s</div>
-                            <div class="stat-label">Avg Time</div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1154,7 +1436,7 @@
             </div>
             <div class="calendar-dates" id="calendarDates"></div>
             <div class="calendar-status" id="calendarStatus">
-                Select a date to play that day's celebrity birthday challenge
+                Select a date to play that day's CelebBday challenge
             </div>
         </div>
     </div>
@@ -1182,7 +1464,7 @@
                     <li>4th guess: <span class="highlight">200 points</span></li>
                     <li>5th guess: <span class="highlight">100 points</span></li>
                 </ul>
-                <p>Come back daily for a new celebrity birthday challenge!</p>
+                <p>Come back daily for a new CelebBday challenge!</p>
             </div>
         </div>
     </div>

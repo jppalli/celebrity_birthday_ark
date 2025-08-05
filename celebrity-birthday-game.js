@@ -94,7 +94,8 @@ class CelebrityBirthdayChallenge {
             avgTime: document.getElementById('avgTime'),
             prevMonth: document.getElementById('prevMonth'),
             nextMonth: document.getElementById('nextMonth'),
-            calendarMonthYear: document.getElementById('calendarMonthYear')
+            calendarMonthYear: document.getElementById('calendarMonthYear'),
+            topMessageArea: document.getElementById('topMessageArea')
         };
         
         // Debug: Log missing elements
@@ -122,6 +123,10 @@ class CelebrityBirthdayChallenge {
         if (this.elements.helpModal) this.elements.helpModal.style.display = 'none';
         if (this.elements.statsModal) this.elements.statsModal.style.display = 'none';
         
+        // Hide original message elements since we use top message area
+        if (this.elements.successMessage) this.elements.successMessage.style.display = 'none';
+        if (this.elements.failureMessage) this.elements.failureMessage.style.display = 'none';
+        
         // Start background music when game finishes loading
         setTimeout(() => {
             this.playBackgroundMusic();
@@ -132,6 +137,9 @@ class CelebrityBirthdayChallenge {
     }
     
     selectTodaysCelebrity() {
+        // Clear any existing completed messages first
+        this.clearCompletedMessages();
+        
         const today = new Date();
         const todayStr = this.formatDate(today);
         const todayMonthDay = this.formatMonthDay(today);
@@ -160,11 +168,10 @@ class CelebrityBirthdayChallenge {
     }
     
     showCompletedPuzzleMessage() {
-        // Hide all game elements
-        this.elements.cluesGrid.style.display = 'none';
-        this.elements.submitGuess.style.display = 'none';
-        this.elements.skipGuess.style.display = 'none';
-        this.elements.guessesLeft.style.display = 'none';
+        // Get the game result for this date
+        const userData = this.loadUserData();
+        const gameResult = userData.games[this.currentDate];
+        const isToday = this.currentDate === this.formatDate(new Date());
         
         // Remove any existing completed message
         const existingMessage = document.querySelector('.completed-puzzle-message');
@@ -172,71 +179,251 @@ class CelebrityBirthdayChallenge {
             existingMessage.remove();
         }
         
-        // Get the game result for this date
-        const userData = this.loadUserData();
-        const gameResult = userData.games[this.currentDate];
-        const isToday = this.currentDate === this.formatDate(new Date());
-        
-        // Show completed message
-        const completedMessage = document.createElement('div');
-        completedMessage.className = gameResult.solved ? 'success-message completed-puzzle-message' : 'failure-message completed-puzzle-message';
-        completedMessage.style.display = 'block';
-        
-        if (gameResult.solved) {
-            if (isToday) {
-                // Only show birthday message if this is actually today's daily challenge
-                // (not a past challenge being played on the celebrity's birthday)
-                const todayStr = this.formatDate(new Date());
-                if (this.currentDate === todayStr) {
-                    completedMessage.innerHTML = `
-                        <h2>Happy Birthday ${this.currentCelebrity.name}</h2>
-                        <p>You already solved today's puzzle!</p>
-                        <p>Score: ${gameResult.score} points in ${gameResult.guessesUsed} guess${gameResult.guessesUsed !== 1 ? 'es' : ''}</p>
-                        <p>Come back tomorrow for a new celebrity birthday challenge.</p>
-                    `;
-                } else {
-                    // This is a past challenge, even if played on the celebrity's birthday
-                    completedMessage.innerHTML = `
-                        <h2>Puzzle Completed</h2>
-                        <p>You solved this puzzle on ${this.currentDate}.</p>
-                        <p>Score: ${gameResult.score} points in ${gameResult.guessesUsed} guess${gameResult.guessesUsed !== 1 ? 'es' : ''}</p>
-                    `;
-                }
+        // For past challenges, show different messages based on whether they were solved
+        if (!isToday) {
+            if (gameResult.solved) {
+                // For successfully completed challenges, show in top area with same style as today
+                const successContent = `<div class="success-message">
+                    <div class="success-message-content">
+                        <p>It's <span class="celebrity-name">${this.currentCelebrity.name} <span class="success-icon">🎉</span></span></p>
+                        <p>You solved it in ${gameResult.guessesUsed} guess${gameResult.guessesUsed !== 1 ? 'es' : ''}!</p>
+                    </div>
+                </div>`;
+                
+                this.showTopMessage(successContent);
+                
+                // Trigger confetti celebration for past challenge success
+                this.triggerConfettiCelebration();
+                
+                // Show stats for past challenge success
+                this.updateCongratsStats();
+                setTimeout(() => {
+                    this.elements.congrats.style.display = 'block';
+                }, 1000);
             } else {
-                // For past challenges, just show the stats without the birthday message
-                completedMessage.innerHTML = `
-                    <h2>Puzzle Completed</h2>
-                    <p>You solved this puzzle on ${this.currentDate}.</p>
-                    <p>Score: ${gameResult.score} points in ${gameResult.guessesUsed} guess${gameResult.guessesUsed !== 1 ? 'es' : ''}</p>
-                `;
+                // For failed challenges, allow replay in top area
+                const replayContent = `<div class="replay-challenge-message">
+                    <div class="replay-content">
+                        <div class="replay-input-section">
+                            <p>Want to try again? Enter your guess:</p>
+                            <input type="text" id="replayGuessInput" placeholder="Enter celebrity name..." />
+                            <button id="submitReplayGuess">Submit Guess</button>
+                            <button id="showAnswerBtn">Show Answer</button>
+                        </div>
+                    </div>
+                </div>`;
+                
+                // Show replay message immediately since we preserved the top area
+                this.showTopMessage(replayContent);
+                
+                // Add event listeners for replay functionality
+                setTimeout(() => this.setupReplayEventListeners(), 100);
             }
-        } else {
-            completedMessage.innerHTML = `
-                <h2>Game Over</h2>
-                <p>You ${isToday ? "already played today's" : "played this"} puzzle.</p>
-                <p>The answer was: <strong>${this.currentCelebrity.name}</strong></p>
-                <p>${isToday ? "Come back tomorrow for a new celebrity birthday challenge." : "Try another date from the calendar!"}</p>
-            `;
+            
+            // Show all clues for reference
+            this.revealAllClues();
+            this.elements.cluesGrid.style.display = 'flex';
+            
+            // Hide original game controls
+            this.elements.submitGuess.style.display = 'none';
+            this.elements.skipGuess.style.display = 'none';
+            this.elements.guessesLeft.style.display = 'none';
+            
+            return;
         }
         
-        // Insert the message before the congrats section
-        const gameArea = this.elements.cluesGrid.parentElement;
-        gameArea.insertBefore(completedMessage, this.elements.congrats);
+        // For today's challenge, show the completed message in top area
+        // Hide game controls but keep clues visible
+        this.elements.submitGuess.style.display = 'none';
+        this.elements.skipGuess.style.display = 'none';
+        this.elements.guessesLeft.style.display = 'none';
+        
+        // Show completed message in top area with same format as fresh completion
+        if (gameResult.solved) {
+            const successContent = `<div class="success-message">
+                <div class="success-message-content">
+                    <p>It's <span class="celebrity-name">${this.currentCelebrity.name} <span class="success-icon">🎉</span></span></p>
+                    <p>You solved it in ${gameResult.guessesUsed} guess${gameResult.guessesUsed !== 1 ? 'es' : ''}!</p>
+                    <p>Come back tomorrow for a new CelebBday challenge.</p>
+                </div>
+            </div>`;
+            this.showTopMessage(successContent);
+            
+            // Trigger confetti celebration for today's already completed challenge
+            this.triggerConfettiCelebration();
+            
+            // Show stats for today's already completed challenge
+            this.updateCongratsStats();
+            setTimeout(() => {
+                this.elements.congrats.style.display = 'block';
+            }, 1000);
+        } else {
+            const failureContent = `<div class="failure-message">
+                <div class="failure-message-content">
+                    <h3>Out of Guesses! 😔</h3>
+                    <p>You gave it your best shot, but this celeb remained a mystery.</p>
+                    <p>Come back tomorrow for a fresh challenge and another chance to shine! 🌟</p>
+                </div>
+            </div>`;
+            this.showTopMessage(failureContent);
+        }
         
         // Show all clues for reference
         this.revealAllClues();
         this.elements.cluesGrid.style.display = 'flex';
     }
     
-    resetToToday() {
-        // Remove any completed message
-        const existingMessage = document.querySelector('.completed-puzzle-message');
-        if (existingMessage) {
-            existingMessage.remove();
+    setupReplayEventListeners() {
+        const replayInput = document.getElementById('replayGuessInput');
+        const submitReplayBtn = document.getElementById('submitReplayGuess');
+        const showAnswerBtn = document.getElementById('showAnswerBtn');
+        
+        if (replayInput && submitReplayBtn) {
+            // Handle replay guess submission
+            const handleReplayGuess = () => {
+                const guess = replayInput.value.trim();
+                if (guess) {
+                    this.handleReplayGuess(guess);
+                }
+            };
+            
+            submitReplayBtn.addEventListener('click', handleReplayGuess);
+            replayInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleReplayGuess();
+                }
+            });
         }
+        
+        if (showAnswerBtn) {
+            showAnswerBtn.addEventListener('click', () => {
+                this.showReplayAnswer();
+            });
+        }
+    }
+    
+    handleReplayGuess(guess) {
+        const normalizedGuess = guess.toLowerCase().trim();
+        const normalizedAnswer = this.currentCelebrity.name.toLowerCase().trim();
+        
+        if (normalizedGuess === normalizedAnswer) {
+            // Correct guess - show celebration in top area
+            const successContent = `<div class="success-message">
+                <div class="success-message-content">
+                    <h3>Correct!</h3>
+                    <p>It's <span class="celebrity-name">${this.currentCelebrity.name} <span class="success-icon">🎉</span></span>!</p>
+                    <p>Great job solving this challenge!</p>
+                </div>
+            </div>`;
+            this.showTopMessage(successContent);
+            this.triggerConfettiCelebration();
+            
+            // Save the successful replay completion
+            this.saveReplayCompletion();
+        } else {
+            // Incorrect guess - don't reveal the answer, just end the replay
+            const incorrectContent = `<div class="failure-message">
+                <div class="failure-message-content">
+                    <h3>Not Quite! 😔</h3>
+                    <p>Your guess: <strong>${guess}</strong></p>
+                    <p>You've used your replay attempt, but the mystery remains!</p>
+                    <p>Better luck with tomorrow's CelebBday!</p>
+                </div>
+            </div>`;
+            this.showTopMessage(incorrectContent);
+        }
+    }
+    
+    showReplayAnswer() {
+        const answerContent = `<div class="replay-challenge-message">
+            <div class="replay-answer">
+                <h3>The Answer</h3>
+                <p>The celebrity is: <strong>${this.currentCelebrity.name}</strong></p>
+                <p>Thanks for playing!</p>
+            </div>
+        </div>`;
+        this.showTopMessage(answerContent);
+    }
+    
+    saveReplayCompletion() {
+        const userData = this.loadUserData();
+        const dateStr = this.currentDate;
+        
+        // Update the game record to show it as solved
+        userData.games[dateStr] = {
+            solved: true,
+            time: 0, // Replay doesn't track time
+            score: 100, // Give a standard score for replay success
+            guessesUsed: 1, // Replay allows 1 guess
+            date: dateStr,
+            completed: true,
+            replaySuccess: true // Mark as replay success
+        };
+        
+        // Update total solved count
+        userData.stats.totalSolved = Object.values(userData.games).filter(g => g.solved).length;
+        userData.stats.totalScore += 100; // Add replay score
+        
+        // Don't update streak for replay completions (only for today's puzzle)
+        
+        this.saveUserData(userData);
+        
+        // Refresh the calendar if it's open to show the updated status
+        if (this.elements.calendarModal && this.elements.calendarModal.style.display !== 'none') {
+            this.renderCalendar();
+        }
+    }
+    
+    resetToToday() {
+        // Remove any completed messages
+        this.clearCompletedMessages();
         
         // Reset to today's puzzle
         this.selectTodaysCelebrity();
+    }
+    
+    clearCompletedMessages(preserveTopArea = false) {
+        // Remove all types of completed challenge messages from the DOM
+        const completedMessages = document.querySelectorAll('.completed-puzzle-message, .replay-challenge-message, .completed-challenge-message');
+        completedMessages.forEach(message => {
+            if (message.parentNode) {
+                message.parentNode.removeChild(message);
+            }
+        });
+        
+        // Only clear the top message area if not preserving it
+        if (!preserveTopArea) {
+            this.hideTopMessage();
+        }
+    }
+    
+    showTopMessage(content) {
+        if (this.elements.topMessageArea) {
+            // Clear any pending hide timeouts
+            if (this.hideTopMessageTimeout) {
+                clearTimeout(this.hideTopMessageTimeout);
+                this.hideTopMessageTimeout = null;
+            }
+            
+            this.elements.topMessageArea.innerHTML = content;
+            this.elements.topMessageArea.style.display = 'block';
+            // Trigger reflow for smooth animation
+            this.elements.topMessageArea.offsetHeight;
+            this.elements.topMessageArea.classList.add('show');
+        }
+    }
+    
+    hideTopMessage() {
+        if (this.elements.topMessageArea) {
+            this.elements.topMessageArea.classList.remove('show');
+            this.hideTopMessageTimeout = setTimeout(() => {
+                if (this.elements.topMessageArea) {
+                    this.elements.topMessageArea.style.display = 'none';
+                    this.elements.topMessageArea.innerHTML = '';
+                }
+                this.hideTopMessageTimeout = null;
+            }, 300);
+        }
     }
     
     setupClueBoxes() {
@@ -368,23 +555,41 @@ class CelebrityBirthdayChallenge {
         const guessesUsed = 5 - this.guessesRemaining + 1;
         this.score = Math.max(0, (6 - guessesUsed) * 100);
         
+        // Get the current guess from the input
+        const currentInput = this.getCurrentInput();
+        const correctGuess = currentInput ? currentInput.value.trim() : this.currentCelebrity.name;
+        
         // Mark current clue box as successful
         const currentClueBox = this.elements[`clue${this.currentActiveInput}`];
         if (currentClueBox) {
             currentClueBox.classList.remove('active');
-            currentClueBox.classList.add('filled');
+            currentClueBox.classList.add('filled', 'correct');
+        }
+        
+        // Show success in current clue box with better visual indicator
+        const failedGuessElement = this.elements[`failedGuess${this.currentActiveInput}`];
+        if (failedGuessElement) {
+            failedGuessElement.innerHTML = `<span class="correct-guess">🎯 ${correctGuess}</span><br><span class="clever-message">Brilliant! You nailed it! 🌟</span>`;
+            failedGuessElement.style.display = 'block';
         }
         
         // Hide current input
-        const currentInput = this.getCurrentInput();
         if (currentInput) {
             currentInput.style.display = 'none';
         }
         
-        // Show success message
+        // Don't add to sidebar - guesses only show inside clue boxes
+        
+        // Show success message in top area
         const isToday = this.currentDate === this.formatDate(new Date());
-        this.elements.successMessage.textContent = `Correct! It's ${this.currentCelebrity.name}.`;
-        this.elements.successMessage.style.display = 'block';
+        const successContent = `<div class="success-message">
+            <div class="success-message-content">
+                <h3>Correct!</h3>
+                <p>It's <span class="celebrity-name">${this.currentCelebrity.name} <span class="success-icon">🎉</span></span></p>
+                <p>You solved it in ${guessesUsed} guess${guessesUsed !== 1 ? 'es' : ''}!</p>
+            </div>
+        </div>`;
+        this.showTopMessage(successContent);
         
         // Hide buttons
         this.elements.submitGuess.style.display = 'none';
@@ -393,6 +598,9 @@ class CelebrityBirthdayChallenge {
         
         // Reveal all remaining clues
         this.revealAllClues();
+        
+        // Trigger confetti celebration
+        this.triggerConfettiCelebration();
         
         // Record completion and show stats
         this.recordGameCompletion();
@@ -416,10 +624,10 @@ class CelebrityBirthdayChallenge {
         this.guessesRemaining--;
         this.previousGuesses.push(guess);
         
-        // Show failed guess in current clue box
+        // Show failed guess in current clue box (simple, no clever message)
         const failedGuessElement = this.elements[`failedGuess${this.currentActiveInput}`];
         if (failedGuessElement) {
-            failedGuessElement.textContent = `Incorrect: ${guess}`;
+            failedGuessElement.innerHTML = `<span class="incorrect-guess">❌ ${guess}</span>`;
             failedGuessElement.style.display = 'block';
         }
         
@@ -436,20 +644,23 @@ class CelebrityBirthdayChallenge {
             currentInput.style.display = 'none';
         }
         
-        // Add to sidebar previous guesses
-        const guessElement = document.createElement('div');
-        guessElement.className = 'previous-guess';
-        guessElement.textContent = guess;
-        this.elements.previousGuesses.appendChild(guessElement);
+        // Don't add to sidebar - guesses only show inside clue boxes
         
         if (this.guessesRemaining <= 0) {
-            // Game over
+            // Game over - show failure message in top area
             this.gameComplete = true;
             this.endTime = new Date();
             this.gameTime = Math.floor((this.endTime - this.startTime) / 1000);
             
-            this.elements.failureMessage.textContent = `Game Over! It was ${this.currentCelebrity.name}`;
-            this.elements.failureMessage.style.display = 'block';
+            // Show failure message in top area without spoiling the answer
+            const failureContent = `<div class="failure-message">
+                <div class="failure-message-content">
+                    <h3>Out of Guesses! 😔</h3>
+                    <p>You gave it your best shot, but today's celeb remains a mystery.</p>
+                    <p>Come back tomorrow for a fresh challenge and another chance to shine! 🌟</p>
+                </div>
+            </div>`;
+            this.showTopMessage(failureContent);
             
             // Hide buttons
             this.elements.submitGuess.style.display = 'none';
@@ -458,6 +669,9 @@ class CelebrityBirthdayChallenge {
             
             // Reveal all clues
             this.revealAllClues();
+            
+            // Record the failed game for calendar status
+            this.recordGameCompletion();
             
             this.playFailSound();
         } else {
@@ -478,11 +692,18 @@ class CelebrityBirthdayChallenge {
         
         this.guessesRemaining--;
         
+        // Show skip message in current clue box (simple, no clever message)
+        const failedGuessElement = this.elements[`failedGuess${this.currentActiveInput}`];
+        if (failedGuessElement) {
+            failedGuessElement.innerHTML = `<span class="skipped-guess">⏭️ Skipped</span>`;
+            failedGuessElement.style.display = 'block';
+        }
+        
         // Mark current clue box as skipped
         const currentClueBox = this.elements[`clue${this.currentActiveInput}`];
         if (currentClueBox) {
             currentClueBox.classList.remove('active');
-            currentClueBox.classList.add('filled');
+            currentClueBox.classList.add('filled', 'skipped');
         }
         
         // Hide current input
@@ -491,14 +712,23 @@ class CelebrityBirthdayChallenge {
             currentInput.style.display = 'none';
         }
         
+        // Don't add to sidebar - guesses only show inside clue boxes
+        
         if (this.guessesRemaining <= 0) {
-            // Game over
+            // Game over - show failure message in top area
             this.gameComplete = true;
             this.endTime = new Date();
             this.gameTime = Math.floor((this.endTime - this.startTime) / 1000);
             
-            this.elements.failureMessage.textContent = `Game Over! It was ${this.currentCelebrity.name}`;
-            this.elements.failureMessage.style.display = 'block';
+            // Show failure message in top area without spoiling the answer
+            const failureContent = `<div class="failure-message">
+                <div class="failure-message-content">
+                    <h3>Out of Guesses! 😔</h3>
+                    <p>You gave it your best shot, but today's celeb remains a mystery.</p>
+                    <p>Come back tomorrow for a fresh challenge and another chance to shine! 🌟</p>
+                </div>
+            </div>`;
+            this.showTopMessage(failureContent);
             
             // Hide buttons
             this.elements.submitGuess.style.display = 'none';
@@ -507,6 +737,9 @@ class CelebrityBirthdayChallenge {
             
             // Reveal all clues
             this.revealAllClues();
+            
+            // Record the failed game for calendar status
+            this.recordGameCompletion();
             
             this.playFailSound();
         } else {
@@ -518,6 +751,155 @@ class CelebrityBirthdayChallenge {
             }
             
             this.updateGameDisplay();
+        }
+    }
+
+    getCleverFailureMessage() {
+        const messages = [
+            "Not quite the star we're looking for! ⭐",
+            "Close, but no Hollywood Walk of Fame! 🌟",
+            "That's not ringing any bells... or Oscar bells! 🔔",
+            "Swing and a miss! Try channeling your inner celebrity! 🎭",
+            "Hmm, that name doesn't sparkle like a celebrity! ✨",
+            "Not the right celebrity, but nice try! 🎬",
+            "That guess is more like a background extra! 🎪",
+            "Keep trying - fame awaits the persistent! 🏆",
+            "Not quite A-list material... yet! 📸",
+            "That's not hitting the red carpet! 🎪"
+        ];
+        return messages[Math.floor(Math.random() * messages.length)];
+    }
+    
+    getFinalFailureMessage() {
+        const messages = [
+            "Looks like you don't know everyone in Hollywood! 🎬",
+            "Even the paparazzi would have gotten this one! 📸",
+            "Time to brush up on your celebrity knowledge! 📚",
+            "This star was hiding in plain sight! ⭐",
+            "Better luck next time, future celebrity expert! 🌟",
+            "Don't worry, even celebrities forget each other's names! 😅",
+            "You gave it your best shot - that's what counts! 🎯",
+            "Sometimes the stars just don't align! ✨",
+            "This celebrity will remember you tried! 💫",
+            "Practice makes perfect in the celebrity game! 🎭"
+        ];
+        return messages[Math.floor(Math.random() * messages.length)];
+    }
+    
+    triggerConfettiCelebration() {
+        // Create confetti container
+        const confettiContainer = document.createElement('div');
+        confettiContainer.className = 'confetti-container';
+        confettiContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        `;
+        document.body.appendChild(confettiContainer);
+        
+        // Enhanced confetti burst with different colors and sizes
+        const colors = [
+            '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7',
+            '#dda0dd', '#98d8c8', '#ff9ff3', '#54a0ff', '#5f27cd',
+            '#00d2d3', '#ff9f43', '#10ac84', '#ee5a24', '#0abde3',
+            '#feca57', '#48dbfb', '#ff6348', '#1dd1a1', '#ffd32a'
+        ];
+        
+        // Set confetti to burst from the top of the screen (header area)
+        const headerPosition = { x: 50, y: 8 }; // 50% from left, 8% from top (header area)
+        
+        // Single center burst with many more particles starting from header
+        this.createConfettiBurst(confettiContainer, colors, headerPosition, 120); // 120 particles!
+        
+        // Add enhanced CSS animation if not already present
+        if (!document.querySelector('#confetti-styles')) {
+            const style = document.createElement('style');
+            style.id = 'confetti-styles';
+            style.textContent = `
+                @keyframes confetti-center-burst {
+                    0% {
+                        transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+                        opacity: 1;
+                    }
+                    15% {
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translateY(var(--fall-distance)) translateX(var(--drift)) rotate(var(--rotation)) scale(0.3);
+                        opacity: 0;
+                    }
+                }
+                
+                .confetti-piece {
+                    border-radius: 2px;
+                }
+                
+                .confetti-piece.square {
+                    border-radius: 0;
+                }
+                
+                .confetti-piece.circle {
+                    border-radius: 50%;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Remove confetti after animation
+        setTimeout(() => {
+            if (confettiContainer.parentNode) {
+                confettiContainer.parentNode.removeChild(confettiContainer);
+            }
+        }, 6000);
+    }
+    
+    createConfettiBurst(container, colors, position, count) {
+        for (let i = 0; i < count; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti-piece';
+            
+            // Random size - different sized rectangles
+            const width = Math.random() * 12 + 4; // 4-16px width
+            const height = Math.random() * 8 + 3; // 3-11px height
+            
+            // Random shape variation
+            const shapeType = Math.random();
+            if (shapeType < 0.7) {
+                confetti.classList.add('square'); // 70% rectangles/squares
+            } else if (shapeType < 0.9) {
+                confetti.classList.add('circle'); // 20% circles
+            }
+            // 10% default rounded rectangles
+            
+            // Enhanced center burst physics - more dramatic spread
+            const angle = (Math.random() * 360) * (Math.PI / 180); // Random angle in radians
+            const velocity = Math.random() * 300 + 100; // 100-400px spread
+            const drift = Math.cos(angle) * velocity; // X movement based on angle
+            const fallDistance = Math.random() * 80 + 60; // 60-140vh fall distance
+            const rotation = Math.random() * 1800 + 720; // 720-2520 degrees
+            const duration = 3 + Math.random() * 2.5; // 3-5.5 seconds
+            
+            confetti.style.cssText = `
+                position: absolute;
+                width: ${width}px;
+                height: ${height}px;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                left: ${position.x}%;
+                top: ${position.y}%;
+                --drift: ${drift}px;
+                --fall-distance: ${fallDistance}vh;
+                --rotation: ${rotation}deg;
+                animation: confetti-center-burst ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+                opacity: 0.9;
+                transform: rotate(${Math.random() * 360}deg);
+                box-shadow: 0 0 6px rgba(0,0,0,0.1);
+            `;
+            
+            container.appendChild(confetti);
         }
     }
     
@@ -794,17 +1176,12 @@ class CelebrityBirthdayChallenge {
         const congratsTotalSolved = document.getElementById('congratsTotalSolved');
         const congratsCurrentStreak = document.getElementById('congratsCurrentStreak');
         const congratsSuccessRate = document.getElementById('congratsSuccessRate');
-        const congratsAvgTime = document.getElementById('congratsAvgTime');
-        
         if (congratsTotalSolved) congratsTotalSolved.textContent = stats.totalSolved;
         if (congratsCurrentStreak) congratsCurrentStreak.textContent = stats.currentStreak;
         
         const totalPlayed = Object.keys(userData.games).length;
         const successRate = totalPlayed > 0 ? Math.round((stats.totalSolved / totalPlayed) * 100) : 0;
         if (congratsSuccessRate) congratsSuccessRate.textContent = `${successRate}%`;
-        
-        const avgTime = stats.totalSolved > 0 ? Math.round(stats.totalTime / stats.totalSolved) : 0;
-        if (congratsAvgTime) congratsAvgTime.textContent = `${avgTime}s`;
     }
     
     formatDate(date) {
@@ -861,29 +1238,56 @@ class CelebrityBirthdayChallenge {
             const isFuture = date > today;
             
             let classes = 'calendar-date';
-            if (isToday) classes += ' today';
-            else if (isPast) classes += ' past';
-            else if (isFuture) classes += ' future';
+            let statusIcon = '';
+            let dayContent = day;
             
-            // Check if this date has been played
+            if (isToday) {
+                classes += ' today';
+                // Give today the same format as solved days
+                dayContent = `<span class="day-number">${day}</span><span class="status-indicator success">✓</span>`;
+            } else if (isPast) {
+                classes += ' past';
+            } else if (isFuture) {
+                classes += ' future';
+            }
+            
+            // Check if this date has been played and add status indicators
             if (userData.games && userData.games[dateStr]) {
                 if (userData.games[dateStr].solved) {
                     classes += ' solved';
+                    dayContent = `<span class="day-number">${day}</span><span class="status-indicator success">✓</span>`;
                 } else {
                     classes += ' failed';
+                    dayContent = `<span class="day-number">${day}</span><span class="status-indicator failed">✗</span>`;
                 }
+            } else if (isFuture) {
+                // Future dates are locked
+                dayContent = `<span class="day-number">${day}</span><span class="status-indicator locked">•</span>`;
+                classes += ' locked';
+            } else if (!isToday) {
+                // Past unplayed days (not today)
+                dayContent = `<span class="day-number">${day}</span>`;
             }
+            // Today's dayContent is already set above
             
             // Check if there's a celebrity for this month-day
             const monthDay = this.formatMonthDay(date);
             const celebrity = this.celebrities.find(c => c.date === monthDay);
             
-            if (celebrity) {
-                html += `<div class="${classes}" data-date="${dateStr}" style="cursor: pointer;" title="Play ${celebrity.name}'s birthday challenge">${day}</div>`;
+            let title = '';
+            let cursor = 'default';
+            
+            if (isFuture) {
+                title = `Locked - Come back on ${dateStr}`;
+                cursor = 'not-allowed';
             } else {
-                // Still allow playing any date (will use deterministic selection)
-                html += `<div class="${classes}" data-date="${dateStr}" style="cursor: pointer;" title="Play ${dateStr} challenge">${day}</div>`;
+                title = '';
+                cursor = 'pointer';
             }
+            
+            html += `<div class="${classes}" data-date="${dateStr}" style="cursor: ${cursor};" title="${title}">
+                <span class="calendar-day-content">${dayContent}</span>
+            </div>`;
         }
         
         this.elements.calendarDates.innerHTML = html;
@@ -896,18 +1300,54 @@ class CelebrityBirthdayChallenge {
                 const today = new Date();
                 
                 if (clickedDate > today) {
+                    // Show locked message for future dates
+                    this.showLockedDateMessage(dateStr);
                     return;
                 }
                 
                 this.loadChallengeForDate(dateStr);
                 this.elements.calendarModal.style.display = 'none';
                 
-                // Update the calendar status
-                this.elements.calendarStatus.textContent = `Playing ${dateStr} challenge`;
+                // Calendar status remains unchanged
             });
         });
         
         this.updateCalendarNavigation();
+    }
+    
+    showLockedDateMessage(dateStr) {
+        // Create a temporary message for locked dates
+        const message = document.createElement('div');
+        message.className = 'locked-date-message';
+        message.innerHTML = `
+            <div class="locked-message-content">
+                <h3>Date Locked</h3>
+                <p>This challenge will be available on ${dateStr}</p>
+                <p>Come back then to play!</p>
+            </div>
+        `;
+        message.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 10000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        `;
+        
+        document.body.appendChild(message);
+        
+        // Remove message after 2 seconds
+        setTimeout(() => {
+            if (message.parentNode) {
+                message.parentNode.removeChild(message);
+            }
+        }, 2000);
     }
     
     updateCalendarNavigation() {
@@ -924,6 +1364,13 @@ class CelebrityBirthdayChallenge {
     }
     
     loadChallengeForDate(dateStr) {
+        // Check if this will be a replay scenario before clearing
+        const userData = this.loadUserData();
+        const willShowReplay = userData.games && userData.games[dateStr] && !userData.games[dateStr].solved;
+        
+        // Clear any existing completed messages, preserve top area if we'll show replay
+        this.clearCompletedMessages(willShowReplay);
+        
         // Extract month-day from the full date string
         const date = new Date(dateStr);
         const monthDay = this.formatMonthDay(date);
