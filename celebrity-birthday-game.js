@@ -88,10 +88,10 @@ class CelebrityBirthdayChallenge {
             closeHelp: document.getElementById('closeHelp'),
             statsModal: document.getElementById('statsModal'),
             closeStats: document.getElementById('closeStats'),
-            totalSolved: document.getElementById('totalSolved'),
+            totalPlayed: document.getElementById('totalPlayed'),
+            winPercentage: document.getElementById('winPercentage'),
             currentStreak: document.getElementById('currentStreak'),
-            successRate: document.getElementById('successRate'),
-            avgTime: document.getElementById('avgTime'),
+            maxStreak: document.getElementById('maxStreak'),
             prevMonth: document.getElementById('prevMonth'),
             nextMonth: document.getElementById('nextMonth'),
             calendarMonthYear: document.getElementById('calendarMonthYear'),
@@ -1150,22 +1150,20 @@ class CelebrityBirthdayChallenge {
         const userData = this.loadUserData();
         const stats = userData.stats;
         
-        if (this.elements.totalSolved) {
-            this.elements.totalSolved.textContent = stats.totalSolved;
+        const totalPlayed = Object.keys(userData.games).length;
+        const winPercentage = totalPlayed > 0 ? Math.round((stats.totalSolved / totalPlayed) * 100) : 0;
+        
+        if (this.elements.totalPlayed) {
+            this.elements.totalPlayed.textContent = totalPlayed;
+        }
+        if (this.elements.winPercentage) {
+            this.elements.winPercentage.textContent = `${winPercentage}%`;
         }
         if (this.elements.currentStreak) {
             this.elements.currentStreak.textContent = stats.currentStreak;
         }
-        
-        const totalPlayed = Object.keys(userData.games).length;
-        const successRate = totalPlayed > 0 ? Math.round((stats.totalSolved / totalPlayed) * 100) : 0;
-        if (this.elements.successRate) {
-            this.elements.successRate.textContent = `${successRate}%`;
-        }
-        
-        const avgTime = stats.totalSolved > 0 ? Math.round(stats.totalTime / stats.totalSolved) : 0;
-        if (this.elements.avgTime) {
-            this.elements.avgTime.textContent = `${avgTime}s`;
+        if (this.elements.maxStreak) {
+            this.elements.maxStreak.textContent = stats.maxStreak;
         }
     }
 
@@ -1173,15 +1171,18 @@ class CelebrityBirthdayChallenge {
         const userData = this.loadUserData();
         const stats = userData.stats;
         
-        const congratsTotalSolved = document.getElementById('congratsTotalSolved');
-        const congratsCurrentStreak = document.getElementById('congratsCurrentStreak');
-        const congratsSuccessRate = document.getElementById('congratsSuccessRate');
-        if (congratsTotalSolved) congratsTotalSolved.textContent = stats.totalSolved;
-        if (congratsCurrentStreak) congratsCurrentStreak.textContent = stats.currentStreak;
-        
         const totalPlayed = Object.keys(userData.games).length;
-        const successRate = totalPlayed > 0 ? Math.round((stats.totalSolved / totalPlayed) * 100) : 0;
-        if (congratsSuccessRate) congratsSuccessRate.textContent = `${successRate}%`;
+        const winPercentage = totalPlayed > 0 ? Math.round((stats.totalSolved / totalPlayed) * 100) : 0;
+        
+        const congratsTotalPlayed = document.getElementById('congratsTotalPlayed');
+        const congratsWinPercentage = document.getElementById('congratsWinPercentage');
+        const congratsCurrentStreak = document.getElementById('congratsCurrentStreak');
+        const congratsMaxStreak = document.getElementById('congratsMaxStreak');
+        
+        if (congratsTotalPlayed) congratsTotalPlayed.textContent = totalPlayed;
+        if (congratsWinPercentage) congratsWinPercentage.textContent = `${winPercentage}%`;
+        if (congratsCurrentStreak) congratsCurrentStreak.textContent = stats.currentStreak;
+        if (congratsMaxStreak) congratsMaxStreak.textContent = stats.maxStreak;
     }
     
     formatDate(date) {
