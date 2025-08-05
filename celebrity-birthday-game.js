@@ -922,7 +922,7 @@ class CelebrityBirthdayChallenge {
         const soundFiles = {
             correct: 'sounds/word-complete.mp3',
             incorrect: 'sounds/error.mp3',
-            success: 'sounds/puzzle-complete.mp3',
+            success: 'sounds/success.mp3',
             fail: 'sounds/reset.mp3',
             buttonClick: 'sounds/keytype.mp3',
             backgroundMusic: 'sounds/background-music.mp3'
