@@ -1415,8 +1415,11 @@ class CelebrityBirthdayChallenge {
     }
     
     loadChallengeForDate(dateStr) {
-        // Immediately hide any existing top messages to prevent flashing
-        this.hideTopMessage();
+        // Immediately clear the top message content to prevent flashing
+        if (this.elements.topMessageArea) {
+            this.elements.topMessageArea.innerHTML = '';
+            this.elements.topMessageArea.classList.remove('show');
+        }
         
         // Clear any existing completed messages
         this.clearCompletedMessages(false);
