@@ -95,7 +95,8 @@ class CelebrityBirthdayChallenge {
             prevMonth: document.getElementById('prevMonth'),
             nextMonth: document.getElementById('nextMonth'),
             calendarMonthYear: document.getElementById('calendarMonthYear'),
-            topMessageArea: document.getElementById('topMessageArea')
+            topMessageArea: document.getElementById('topMessageArea'),
+            playAnotherDayBtn: document.getElementById('playAnotherDayBtn')
         };
         
         // Debug: Log missing elements
@@ -1715,6 +1716,19 @@ class CelebrityBirthdayChallenge {
                 this.elements.congrats.style.display = 'none';
                 this.showModal(this.elements.calendarModal);
                 this.renderCalendar();
+            });
+        }
+
+        // Play Another Day button in congrats section
+        const playAnotherDayBtn = document.getElementById('playAnotherDayBtn');
+        if (playAnotherDayBtn) {
+            playAnotherDayBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.elements.congrats.classList.remove('show');
+                this.elements.congrats.style.display = 'none';
+                this.showModal(this.elements.calendarModal);
+                this.renderCalendar();
+                this.playButtonClickSound();
             });
         }
     }
