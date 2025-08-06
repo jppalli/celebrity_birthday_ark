@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <style>
         * {
@@ -18,7 +20,8 @@
             font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        html, body {
+        html,
+        body {
             background: #ffffff;
             color: #1a1a1b;
             line-height: 1.4;
@@ -359,7 +362,8 @@
 
             .game-title {
                 font-size: 20px;
-                margin: 0 60px; /* Add margin to prevent overlap with hamburger menu */
+                margin: 0 60px;
+                /* Add margin to prevent overlap with hamburger menu */
             }
 
             .guess-buttons {
@@ -378,14 +382,15 @@
                 padding: 0 12px;
                 height: 56px;
             }
-            
+
             .game-title {
                 font-size: 18px;
-                margin: 0 50px; /* Ensure title doesn't overlap with hamburger menu */
+                margin: 0 50px;
+                /* Ensure title doesn't overlap with hamburger menu */
                 text-align: center;
                 line-height: 1.2;
             }
-            
+
             .hamburger-menu {
                 left: 12px;
                 padding: 6px;
@@ -401,7 +406,7 @@
                 font-size: 13px;
                 max-width: 100%;
             }
-            
+
             .guess-input {
                 font-size: 16px;
                 padding: 12px 10px;
@@ -430,6 +435,22 @@
             .stat-label {
                 font-size: 11px;
             }
+
+            /* Mobile calendar date adjustments */
+            .calendar-date {
+                padding: 8px 4px;
+                font-size: 12px;
+            }
+
+            .status-indicator {
+                font-size: 8px;
+                top: 1px;
+                right: 1px;
+            }
+
+            .status-indicator.locked {
+                font-size: 6px;
+            }
         }
 
         /* Extra small screens */
@@ -438,31 +459,47 @@
                 font-size: 16px;
                 margin: 0 45px;
             }
-            
+
             .header {
                 height: 52px;
             }
-            
+
+            /* Extra small calendar date adjustments */
+            .calendar-date {
+                padding: 6px 2px;
+                font-size: 11px;
+            }
+
+            .status-indicator {
+                font-size: 7px;
+                top: 0px;
+                right: 0px;
+            }
+
+            .status-indicator.locked {
+                font-size: 5px;
+            }
+
             .hamburger-menu {
                 left: 8px;
                 padding: 4px;
             }
-            
+
             .clue-row {
                 padding: 8px;
                 font-size: 12px;
                 min-height: 42px;
             }
-            
+
             .guess-input {
                 padding: 10px 8px;
                 font-size: 16px;
             }
-            
+
             .guess-buttons {
                 gap: 6px;
             }
-            
+
             .guess-button {
                 padding: 10px 12px;
                 font-size: 12px;
@@ -1022,7 +1059,7 @@
             font-weight: bold;
             position: absolute;
             top: 2px;
-            right: 4px;
+            right: 2px;
         }
 
         .status-indicator.success {
@@ -1299,7 +1336,7 @@
                     </div>
                     <i class="fas fa-chevron-right"></i>
                 </div>
-                
+
                 <div class="menu-item menu-link" id="menuHelpLink">
                     <div class="menu-item-label">
                         <i class="fas fa-question-circle"></i>
@@ -1327,7 +1364,7 @@
             <div class="game-area">
                 <!-- Top message area for success messages and replay inputs -->
                 <div class="top-message-area" id="topMessageArea" style="display: none;"></div>
-                
+
                 <div class="clues-grid" id="cluesGrid">
                     <div class="clue-row" id="clue1">
                         <div class="clue-number">1</div>
