@@ -440,12 +440,21 @@
             .calendar-date {
                 padding: 8px 4px;
                 font-size: 12px;
+                min-height: 36px;
+            }
+
+            .day-number {
+                display: block;
+                margin-top: 4px;
+                margin-right: 8px;
             }
 
             .status-indicator {
                 font-size: 8px;
                 top: 1px;
                 right: 1px;
+                line-height: 1;
+                z-index: 1;
             }
 
             .status-indicator.locked {
@@ -468,12 +477,21 @@
             .calendar-date {
                 padding: 6px 2px;
                 font-size: 11px;
+                min-height: 32px;
+            }
+
+            .day-number {
+                display: block;
+                margin-top: 3px;
+                margin-right: 6px;
             }
 
             .status-indicator {
                 font-size: 7px;
                 top: 0px;
                 right: 0px;
+                line-height: 1;
+                z-index: 1;
             }
 
             .status-indicator.locked {
@@ -1058,8 +1076,9 @@
             font-size: 10px;
             font-weight: bold;
             position: absolute;
-            top: 2px;
-            right: 2px;
+            top: 1px;
+            right: 1px;
+            line-height: 1;
         }
 
         .status-indicator.success {
