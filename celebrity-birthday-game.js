@@ -1415,12 +1415,11 @@ class CelebrityBirthdayChallenge {
     }
     
     loadChallengeForDate(dateStr) {
-        // Check if this will be a replay scenario before clearing
-        const userData = this.loadUserData();
-        const willShowReplay = userData.games && userData.games[dateStr] && !userData.games[dateStr].solved;
+        // Immediately hide any existing top messages to prevent flashing
+        this.hideTopMessage();
         
-        // Clear any existing completed messages, preserve top area if we'll show replay
-        this.clearCompletedMessages(willShowReplay);
+        // Clear any existing completed messages
+        this.clearCompletedMessages(false);
         
         // Extract month-day from the full date string
         const date = new Date(dateStr);
