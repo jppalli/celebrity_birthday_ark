@@ -265,7 +265,7 @@ class CelebrityBirthdayChallenge {
                     <p>Come back tomorrow for a fresh challenge and another chance to shine! 🌟</p>
                 </div>
             </div>`;
-            this.showTopMessage(failureContent);
+            this.showTopMessage(failureContent, true);
         }
         
         // Show all clues for reference
@@ -396,7 +396,7 @@ class CelebrityBirthdayChallenge {
         }
     }
     
-    showTopMessage(content) {
+    showTopMessage(content, scrollToTop = false) {
         if (this.elements.topMessageArea) {
             // Clear any pending hide timeouts
             if (this.hideTopMessageTimeout) {
@@ -409,6 +409,16 @@ class CelebrityBirthdayChallenge {
             // Trigger reflow for smooth animation
             this.elements.topMessageArea.offsetHeight;
             this.elements.topMessageArea.classList.add('show');
+            
+            // Scroll to top if requested
+            if (scrollToTop) {
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }, 100); // Small delay to ensure message is rendered
+            }
         }
     }
     
@@ -657,7 +667,7 @@ class CelebrityBirthdayChallenge {
                     <p>Come back tomorrow for a fresh challenge and another chance to shine! 🌟</p>
                 </div>
             </div>`;
-            this.showTopMessage(failureContent);
+            this.showTopMessage(failureContent, true);
             
             // Hide buttons
             this.elements.submitGuess.style.display = 'none';
@@ -725,7 +735,7 @@ class CelebrityBirthdayChallenge {
                     <p>Come back tomorrow for a fresh challenge and another chance to shine! 🌟</p>
                 </div>
             </div>`;
-            this.showTopMessage(failureContent);
+            this.showTopMessage(failureContent, true);
             
             // Hide buttons
             this.elements.submitGuess.style.display = 'none';
