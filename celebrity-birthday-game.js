@@ -1292,18 +1292,19 @@ class CelebrityBirthdayChallenge {
         const timeDiff = tomorrow.getTime() - now.getTime();
         const hours = Math.floor(timeDiff / (1000 * 60 * 60));
         const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
         
-        return { hours, minutes };
+        return { hours, minutes, seconds };
     }
 
     updateCountdownTimer() {
         if (!this.elements.countdownTimer || !this.elements.countdownTime) return;
         
-        const { hours, minutes } = this.getTimeUntilNextBirthday();
-        this.elements.countdownTime.textContent = `${hours}h ${minutes}m`;
+        const { hours, minutes, seconds } = this.getTimeUntilNextBirthday();
+        this.elements.countdownTime.textContent = `${hours}h ${minutes}m ${seconds}s`;
         
-        // Update every minute
-        setTimeout(() => this.updateCountdownTimer(), 60000);
+        // Update every second
+        setTimeout(() => this.updateCountdownTimer(), 1000);
     }
 
     showCountdownTimer() {
