@@ -276,6 +276,13 @@ class CelebrityBirthdayChallenge {
                 </div>
             </div>`;
             this.showTopMessage(failureContent, true);
+            
+            // Show stats for failed game
+            this.updateCongratsStats();
+            setTimeout(() => {
+                this.elements.congrats.style.display = 'block';
+                setTimeout(() => this.elements.congrats.classList.add('show'), 50);
+            }, 1000);
         }
         
         // Show all clues for reference
@@ -723,6 +730,13 @@ class CelebrityBirthdayChallenge {
             // Record the failed game for calendar status
             this.recordGameCompletion();
             
+            // Show stats for failed game
+            this.updateCongratsStats();
+            setTimeout(() => {
+                this.elements.congrats.style.display = 'block';
+                setTimeout(() => this.elements.congrats.classList.add('show'), 50);
+            }, 1000);
+            
             this.playFailSound();
         } else {
             // Move to next clue and input
@@ -790,6 +804,13 @@ class CelebrityBirthdayChallenge {
             
             // Record the failed game for calendar status
             this.recordGameCompletion();
+            
+            // Show stats for failed game
+            this.updateCongratsStats();
+            setTimeout(() => {
+                this.elements.congrats.style.display = 'block';
+                setTimeout(() => this.elements.congrats.classList.add('show'), 50);
+            }, 1000);
             
             this.playFailSound();
         } else {
