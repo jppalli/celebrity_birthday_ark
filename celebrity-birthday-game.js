@@ -1525,6 +1525,11 @@ class CelebrityBirthdayChallenge {
             this.elements.failureMessage.style.display = 'none';
             this.elements.previousGuesses.innerHTML = '';
             
+            // Hide countdown timer for past challenges
+            if (this.elements.countdownTimer) {
+                this.elements.countdownTimer.style.display = 'none';
+            }
+            
             // Show clues grid
             this.elements.cluesGrid.style.display = 'flex';
             
