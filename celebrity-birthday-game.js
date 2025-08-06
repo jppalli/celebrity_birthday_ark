@@ -96,7 +96,9 @@ class CelebrityBirthdayChallenge {
             nextMonth: document.getElementById('nextMonth'),
             calendarMonthYear: document.getElementById('calendarMonthYear'),
             topMessageArea: document.getElementById('topMessageArea'),
-            playAnotherDayBtn: document.getElementById('playAnotherDayBtn')
+            playAnotherDayBtn: document.getElementById('playAnotherDayBtn'),
+            countdownTimer: document.getElementById('countdownTimer'),
+            countdownTime: document.getElementById('countdownTime')
         };
         
         // Debug: Log missing elements
@@ -288,6 +290,13 @@ class CelebrityBirthdayChallenge {
         // Show all clues for reference
         this.revealAllClues();
         this.elements.cluesGrid.style.display = 'flex';
+        
+        // Show countdown timer for today's completed challenge
+        if (isToday) {
+            setTimeout(() => {
+                this.showCountdownTimer();
+            }, 1000);
+        }
     }
     
     setupReplayEventListeners() {
@@ -663,6 +672,11 @@ class CelebrityBirthdayChallenge {
         
         // For past challenges, show stats immediately. For today, show after delay
         if (isToday) {
+            // Show countdown timer for today's completed challenge
+            setTimeout(() => {
+                this.showCountdownTimer();
+            }, 1000);
+            
             setTimeout(() => {
                 this.elements.congrats.style.display = 'block';
                 setTimeout(() => this.elements.congrats.classList.add('show'), 50);
@@ -1267,6 +1281,36 @@ class CelebrityBirthdayChallenge {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${month}-${day}`;
+    }
+
+    getTimeUntilNextBirthday() {
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        
+        const timeDiff = tomorrow.getTime() - now.getTime();
+        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        return { hours, minutes };
+    }
+
+    updateCountdownTimer() {
+        if (!this.elements.countdownTimer || !this.elements.countdownTime) return;
+        
+        const { hours, minutes } = this.getTimeUntilNextBirthday();
+        this.elements.countdownTime.textContent = `${hours}h ${minutes}m`;
+        
+        // Update every minute
+        setTimeout(() => this.updateCountdownTimer(), 60000);
+    }
+
+    showCountdownTimer() {
+        if (!this.elements.countdownTimer) return;
+        
+        this.elements.countdownTimer.style.display = 'block';
+        this.updateCountdownTimer();
     }
     
     getDateSeed(dateStr) {
