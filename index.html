@@ -156,7 +156,9 @@
             position: relative;
             width: 100%;
             max-width: 350px;
-            transition: border-color 0.1s ease;
+            transition: all 0.3s ease;
+            transform: translateY(0);
+            opacity: 1;
         }
 
         .clue-row.active {
@@ -216,11 +218,14 @@
             text-align: center;
             background: #ffffff;
             color: #1a1a1b;
-            transition: border-color 0.1s ease;
+            transition: all 0.2s ease;
+            border-radius: 4px;
         }
 
         .guess-input:focus {
             border-color: #878a8c;
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(135, 138, 140, 0.2);
         }
 
         .failed-guess {
@@ -252,16 +257,19 @@
             cursor: pointer;
             font-family: inherit;
             flex: 1;
-            transition: background-color 0.1s ease;
+            transition: all 0.2s ease;
+            transform: scale(1);
         }
 
         .guess-button:hover {
             background: #5a9a54;
+            transform: scale(1.02);
         }
 
         .guess-button:disabled {
             background: #787c7e;
             cursor: not-allowed;
+            transform: scale(1);
         }
 
         .skip-button {
@@ -304,6 +312,14 @@
             text-align: center;
             width: 100%;
             max-width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .congrats.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .congrats-stats {
@@ -781,12 +797,20 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            display: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            background: rgba(255, 255, 255, 0.9);
+            opacity: 1;
+            visibility: visible;
         }
 
         .modal-content {
@@ -798,6 +822,13 @@
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
+            transform: scale(0.9) translateY(-20px);
+            transition: transform 0.3s ease;
+            border-radius: 12px;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1) translateY(0);
         }
 
         .modal-header {
@@ -859,11 +890,13 @@
             justify-content: center;
             font-size: 14px;
             font-weight: 700;
-            transition: border-color 0.1s ease;
+            transition: all 0.2s ease;
+            transform: scale(1);
         }
 
         .calendar-nav-btn:hover {
             border-color: #878a8c;
+            transform: scale(1.05);
         }
 
         .calendar-nav-btn:disabled {
@@ -871,6 +904,7 @@
             color: #d3d6da;
             border-color: #d3d6da;
             cursor: not-allowed;
+            transform: scale(1);
         }
 
         #calendarMonthYear {
@@ -915,11 +949,13 @@
             font-size: 14px;
             border: 1px solid #d3d6da;
             border-radius: 6px;
-            transition: background-color 0.1s ease;
+            transition: all 0.2s ease;
+            transform: scale(1);
         }
 
         .calendar-date:hover {
             background: #f6f7f8;
+            transform: scale(1.05);
         }
 
         .calendar-date.active {

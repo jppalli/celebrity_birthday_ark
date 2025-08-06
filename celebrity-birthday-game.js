@@ -256,6 +256,7 @@ class CelebrityBirthdayChallenge {
             this.updateCongratsStats();
             setTimeout(() => {
                 this.elements.congrats.style.display = 'block';
+                setTimeout(() => this.elements.congrats.classList.add('show'), 50);
             }, 1000);
         } else {
             const failureContent = `<div class="failure-message">
@@ -419,6 +420,24 @@ class CelebrityBirthdayChallenge {
                     });
                 }, 100); // Small delay to ensure message is rendered
             }
+        }
+    }
+
+    showModal(modal) {
+        if (modal) {
+            modal.style.display = 'flex';
+            // Trigger reflow for smooth animation
+            modal.offsetHeight;
+            modal.classList.add('show');
+        }
+    }
+
+    hideModal(modal) {
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300); // Match transition duration
         }
     }
     
@@ -617,10 +636,12 @@ class CelebrityBirthdayChallenge {
         if (isToday) {
             setTimeout(() => {
                 this.elements.congrats.style.display = 'block';
+                setTimeout(() => this.elements.congrats.classList.add('show'), 50);
             }, 2000);
         } else {
             setTimeout(() => {
                 this.elements.congrats.style.display = 'block';
+                setTimeout(() => this.elements.congrats.classList.add('show'), 50);
             }, 1000);
         }
         
@@ -1314,7 +1335,7 @@ class CelebrityBirthdayChallenge {
                 }
                 
                 this.loadChallengeForDate(dateStr);
-                this.elements.calendarModal.style.display = 'none';
+                this.hideModal(this.elements.calendarModal);
                 
                 // Calendar status remains unchanged
             });
@@ -1405,6 +1426,7 @@ class CelebrityBirthdayChallenge {
             this.currentActiveInput = 1;
             
             // Reset UI
+            this.elements.congrats.classList.remove('show');
             this.elements.congrats.style.display = 'none';
             this.elements.successMessage.style.display = 'none';
             this.elements.failureMessage.style.display = 'none';
@@ -1528,7 +1550,7 @@ class CelebrityBirthdayChallenge {
             this.elements.menuStatsLink.addEventListener('click', () => {
                 this.closeMenu();
                 this.updateStatsDisplay();
-                this.elements.statsModal.style.display = 'flex';
+                this.showModal(this.elements.statsModal);
                 this.playButtonClickSound();
             });
         }
@@ -1536,7 +1558,7 @@ class CelebrityBirthdayChallenge {
         if (this.elements.menuCalendarLink) {
             this.elements.menuCalendarLink.addEventListener('click', () => {
                 this.closeMenu();
-                this.elements.calendarModal.style.display = 'flex';
+                this.showModal(this.elements.calendarModal);
                 this.renderCalendar();
                 this.playButtonClickSound();
             });
@@ -1545,7 +1567,7 @@ class CelebrityBirthdayChallenge {
         if (this.elements.menuHelpLink) {
             this.elements.menuHelpLink.addEventListener('click', () => {
                 this.closeMenu();
-                this.elements.helpModal.style.display = 'flex';
+                this.showModal(this.elements.helpModal);
                 this.playButtonClickSound();
             });
         }
@@ -1578,7 +1600,7 @@ class CelebrityBirthdayChallenge {
         // Calendar functionality
         if (this.elements.closeCalendar) {
             this.elements.closeCalendar.addEventListener('click', () => {
-                this.elements.calendarModal.style.display = 'none';
+                this.hideModal(this.elements.calendarModal);
             });
         }
         
@@ -1608,27 +1630,27 @@ class CelebrityBirthdayChallenge {
         // Help functionality
         if (this.elements.closeHelp) {
             this.elements.closeHelp.addEventListener('click', () => {
-                this.elements.helpModal.style.display = 'none';
+                this.hideModal(this.elements.helpModal);
             });
         }
         
         // Stats functionality
         if (this.elements.closeStats) {
             this.elements.closeStats.addEventListener('click', () => {
-                this.elements.statsModal.style.display = 'none';
+                this.hideModal(this.elements.statsModal);
             });
         }
         
         // Close modals when clicking outside
         document.addEventListener('click', (e) => {
             if (this.elements.calendarModal && e.target === this.elements.calendarModal) {
-                this.elements.calendarModal.style.display = 'none';
+                this.hideModal(this.elements.calendarModal);
             }
             if (this.elements.helpModal && e.target === this.elements.helpModal) {
-                this.elements.helpModal.style.display = 'none';
+                this.hideModal(this.elements.helpModal);
             }
             if (this.elements.statsModal && e.target === this.elements.statsModal) {
-                this.elements.statsModal.style.display = 'none';
+                this.hideModal(this.elements.statsModal);
             }
         });
 
@@ -1637,8 +1659,9 @@ class CelebrityBirthdayChallenge {
         if (pastChallengesBtn) {
             pastChallengesBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                this.elements.congrats.classList.remove('show');
                 this.elements.congrats.style.display = 'none';
-                this.elements.calendarModal.style.display = 'flex';
+                this.showModal(this.elements.calendarModal);
                 this.renderCalendar();
             });
         }
