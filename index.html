@@ -60,6 +60,19 @@
             justify-content: center;
         }
 
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .game-logo {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
         .game-title {
             font-family: 'Fredoka', cursive;
             font-size: 28px;
@@ -343,7 +356,7 @@
         }
 
         .play-another-day-btn {
-            background: linear-gradient(135deg, #6aaa64 0%, #5a9a54 100%);
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
             color: #ffffff;
             border: none;
             padding: 12px 24px;
@@ -355,13 +368,13 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 12px rgba(106, 170, 100, 0.3);
+            box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
         }
 
         .play-another-day-btn:hover {
-            background: linear-gradient(135deg, #5a9a54 0%, #4a8a44 100%);
+            background: linear-gradient(135deg, #ff1493 0%, #ff0066 100%);
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(106, 170, 100, 0.4);
+            box-shadow: 0 6px 16px rgba(255, 105, 180, 0.4);
         }
 
         .play-another-day-btn:active {
@@ -423,6 +436,15 @@
                 font-size: 14px;
             }
 
+            .title-container {
+                gap: 8px;
+            }
+
+            .game-logo {
+                width: 28px;
+                height: 28px;
+            }
+
             .game-title {
                 font-size: 20px;
                 margin: 0 60px;
@@ -444,6 +466,15 @@
             .header {
                 padding: 0 12px;
                 height: 56px;
+            }
+
+            .title-container {
+                gap: 6px;
+            }
+
+            .game-logo {
+                width: 24px;
+                height: 24px;
             }
 
             .game-title {
@@ -1484,7 +1515,10 @@
                     <span></span>
                 </div>
             </div>
-            <h1 class="game-title">CelebBday</h1>
+            <div class="title-container">
+                <img src="assets/celebbday_logo2.png" alt="CelebBday Logo" class="game-logo">
+                <h1 class="game-title">CelebBday</h1>
+            </div>
         </div>
 
         <div class="main-content">
