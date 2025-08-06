@@ -272,7 +272,6 @@ class CelebrityBirthdayChallenge {
                 <div class="failure-message-content">
                     <h3>Out of Guesses! 😔</h3>
                     <p>You gave it your best shot, but this celeb remained a mystery.</p>
-                    <p>Come back tomorrow for a fresh challenge and another chance to shine! 🌟</p>
                 </div>
             </div>`;
             this.showTopMessage(failureContent, true);
@@ -1449,14 +1448,15 @@ class CelebrityBirthdayChallenge {
             this.startTime = new Date();
             this.currentActiveInput = 1;
             
-            // Reset UI
+            // Check if this puzzle has already been played FIRST
+            const userData = this.loadUserData();
+            const isCompleted = userData.games && userData.games[dateStr];
+            
+            // Reset UI elements
             this.elements.congrats.classList.remove('show');
             this.elements.congrats.style.display = 'none';
             this.elements.successMessage.style.display = 'none';
             this.elements.failureMessage.style.display = 'none';
-            this.elements.submitGuess.style.display = 'inline-block';
-            this.elements.skipGuess.style.display = 'inline-block';
-            this.elements.guessesLeft.style.display = 'block';
             this.elements.previousGuesses.innerHTML = '';
             
             // Show clues grid
@@ -1470,11 +1470,21 @@ class CelebrityBirthdayChallenge {
                 }
             }
             
-            // Check if this puzzle has already been played
-            const userData = this.loadUserData();
-            if (userData.games && userData.games[dateStr]) {
+            if (isCompleted) {
+                // Hide game controls for completed puzzles
+                this.elements.submitGuess.style.display = 'none';
+                this.elements.skipGuess.style.display = 'none';
+                this.elements.guessesLeft.style.display = 'none';
+                
+                // Show completed puzzle message
                 this.showCompletedPuzzleMessage();
             } else {
+                // Show game controls for new puzzles
+                this.elements.submitGuess.style.display = 'inline-block';
+                this.elements.skipGuess.style.display = 'inline-block';
+                this.elements.guessesLeft.style.display = 'block';
+                
+                // Set up the game for playing
                 this.setupClueBoxes();
                 this.updateGameDisplay();
                 this.focusCurrentInput();
