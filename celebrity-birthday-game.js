@@ -118,10 +118,19 @@ class CelebrityBirthdayChallenge {
         this.selectTodaysCelebrity();
         this.setupEventListeners();
         
-        // Ensure all modals are hidden
-        if (this.elements.calendarModal) this.elements.calendarModal.style.display = 'none';
-        if (this.elements.helpModal) this.elements.helpModal.style.display = 'none';
-        if (this.elements.statsModal) this.elements.statsModal.style.display = 'none';
+        // Ensure all modals are properly initialized and hidden
+        if (this.elements.calendarModal) {
+            this.elements.calendarModal.style.display = 'none';
+            this.elements.calendarModal.classList.remove('show');
+        }
+        if (this.elements.helpModal) {
+            this.elements.helpModal.style.display = 'none';
+            this.elements.helpModal.classList.remove('show');
+        }
+        if (this.elements.statsModal) {
+            this.elements.statsModal.style.display = 'none';
+            this.elements.statsModal.classList.remove('show');
+        }
         
         // Hide original message elements since we use top message area
         if (this.elements.successMessage) this.elements.successMessage.style.display = 'none';
@@ -425,10 +434,21 @@ class CelebrityBirthdayChallenge {
 
     showModal(modal) {
         if (modal) {
+            // Ensure modal is properly positioned
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.zIndex = '1000';
             modal.style.display = 'flex';
+            
             // Trigger reflow for smooth animation
             modal.offsetHeight;
             modal.classList.add('show');
+            
+            // Prevent body scrolling on mobile
+            document.body.style.overflow = 'hidden';
         }
     }
 
@@ -437,6 +457,8 @@ class CelebrityBirthdayChallenge {
             modal.classList.remove('show');
             setTimeout(() => {
                 modal.style.display = 'none';
+                // Restore body scrolling
+                document.body.style.overflow = '';
             }, 300); // Match transition duration
         }
     }
@@ -1547,20 +1569,38 @@ class CelebrityBirthdayChallenge {
         
         // Menu Navigation Links
         if (this.elements.menuStatsLink) {
-            this.elements.menuStatsLink.addEventListener('click', () => {
+            const handleStatsClick = () => {
                 this.closeMenu();
-                this.updateStatsDisplay();
-                this.showModal(this.elements.statsModal);
+                // Small delay to ensure menu closes before modal opens
+                setTimeout(() => {
+                    this.updateStatsDisplay();
+                    this.showModal(this.elements.statsModal);
+                }, 100);
                 this.playButtonClickSound();
+            };
+            
+            this.elements.menuStatsLink.addEventListener('click', handleStatsClick);
+            this.elements.menuStatsLink.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                handleStatsClick();
             });
         }
         
         if (this.elements.menuCalendarLink) {
-            this.elements.menuCalendarLink.addEventListener('click', () => {
+            const handleCalendarClick = () => {
                 this.closeMenu();
-                this.showModal(this.elements.calendarModal);
-                this.renderCalendar();
+                // Small delay to ensure menu closes before modal opens
+                setTimeout(() => {
+                    this.showModal(this.elements.calendarModal);
+                    this.renderCalendar();
+                }, 100);
                 this.playButtonClickSound();
+            };
+            
+            this.elements.menuCalendarLink.addEventListener('click', handleCalendarClick);
+            this.elements.menuCalendarLink.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                handleCalendarClick();
             });
         }
         
